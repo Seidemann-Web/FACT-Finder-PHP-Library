@@ -31,7 +31,7 @@ if ( array_search(FF_LIB_DIR, $includePaths, true) === false )
 {
 	set_include_path( get_include_path() . PATH_SEPARATOR . FF_LIB_DIR);
 }
-spl_autoload_register(array('FACTFinder\Loader', 'autoload'));
+spl_autoload_register(array('FACTFinder\Loader', 'autoload'), true, true);
 
 // don't know, whether I should do that
 if (function_exists('__autoload')
@@ -114,6 +114,11 @@ class Loader
         return $instance;
     }
 
+    private static function canLoadClass($classname)
+    {
+        return file_exists(self::getFilename($classname));
+    }
+
     /**
      * Expects a fully qualified class name. if the leading namespace is omitted
      * or "FACTFinder", we first check whether there is a custom class in
@@ -136,9 +141,9 @@ class Loader
         $factfinderClassName = 'FACTFinder\\' . $name;
         $defaultClassName    = $name;
 
-        if (class_exists($customClassName))
+        if (self::canLoadClass($customClassName))
             $className = $customClassName;
-        else if (class_exists($factfinderClassName))
+        else if (self::canLoadClass($factfinderClassName))
             $className = $factfinderClassName;
         else if (class_exists($defaultClassName))
             $className = $defaultClassName;

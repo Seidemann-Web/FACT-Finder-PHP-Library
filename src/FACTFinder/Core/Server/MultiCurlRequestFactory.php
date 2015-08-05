@@ -27,7 +27,7 @@ class MultiCurlRequestFactory implements RequestFactoryInterface
     /**
      * @var \FACTFinder\Util\Parameters
      */
-    private $requestParameters;
+    protected $requestParameters;
 
     /**
      * @param string $loggerClass
