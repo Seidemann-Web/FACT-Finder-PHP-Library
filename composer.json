@@ -1,20 +1,15 @@
 {
-    "name": "fact-finder/sw-fact-finder-php-library",
-    "description": "FACT Finder PHP Library customized for the module swFactFinder",
+    "name": "fact-finder/fact-finder-php-library",
+    "description": "FACT Finder PHP Library",
     "license": "GPL-3.0",
     "keywords": [
         "fact finder",
         "fact finder php library"
     ],
-    "homepage": "https://github.com/Seidemann-Web/FACT-Finder-PHP-Library",
+    "homepage": "https://github.com/FACT-Finder/FACT-Finder-PHP-Library",
     "authors": [
         {
             "name": "Martin Büttner"
-        },
-        {
-            "name": "Sebastian Diez",
-            "email": "s.diez@seidemann-web.com",
-            "homepage": "https://seidemann-web.com/"
         }
     ],
     "require": {
