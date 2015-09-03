@@ -29,7 +29,7 @@ if (!defined('FF_LIB_DIR'))
 $includePaths = explode(PATH_SEPARATOR, get_include_path());
 if ( array_search(FF_LIB_DIR, $includePaths, true) === false )
 {
-	set_include_path( get_include_path() . PATH_SEPARATOR . FF_LIB_DIR);
+    set_include_path( get_include_path() . PATH_SEPARATOR . FF_LIB_DIR);
 }
 spl_autoload_register(array('FACTFinder\Loader', 'autoload'), true, true);
 
@@ -51,6 +51,8 @@ if (function_exists('__autoload')
 class Loader
 {
     protected static $classNames = array();
+
+    protected static $loadCustomClasses = true;
 
     // TODO: Check parent namespaces, too?
     public static function autoload($classname)
@@ -141,7 +143,7 @@ class Loader
         $factfinderClassName = 'FACTFinder\\' . $name;
         $defaultClassName    = $name;
 
-        if (self::canLoadClass($customClassName))
+        if (self::$loadCustomClasses && self::canLoadClass($customClassName))
             $className = $customClassName;
         else if (self::canLoadClass($factfinderClassName))
             $className = $factfinderClassName;
@@ -169,5 +171,15 @@ class Loader
     {
         $className = self::getClassName($class);
         return $object instanceof $className;
+    }
+
+    /**
+     * It may happen that your application's autoloader is not compatible
+     * with this one due to the custom class loading feature.
+     * This method disables the loading of custom classes.
+     */
+    public static function disableCustomClasses()
+    {
+        self::$loadCustomClasses = false;
     }
 }

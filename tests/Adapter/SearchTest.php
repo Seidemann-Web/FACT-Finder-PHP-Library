@@ -141,7 +141,7 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
         $this->assertEquals('/index.php?seoPath=%2Fbmx%2Fq&filterCategory2=BMX&filterCategory1=Fahrr%E4der&followSearch=9798&filterRatingAverage=4-5', $slider->getUrl());
 
         unset($asn[0][1]);
-        $this->assertFalse($asn->hasPreviewImages());
+        $this->assertTrue($asn->hasPreviewImages());
     }
 
     public function testGetResultsPerPageOptions()
@@ -275,14 +275,16 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
         $this->assertEquals(9798, $this->adapter->getFollowSearchValue());
     }
 
-    public function testIsArticleNumberSearch()
+    public function testArticleNumberSearchStatus()
     {
         $this->adapter->setQuery('278003');
-        $this->assertTrue($this->adapter->isArticleNumberSearch());
+        $articleNumberSearchStatusEnum = FF::getClassName('Data\ArticleNumberSearchStatus');
+        $this->assertEquals($articleNumberSearchStatusEnum::IsArticleNumberResultFound(), $this->adapter->getArticleNumberStatus());
     }
 
-    public function testIsNoArticleNumberSearch()
+    public function testNoArticleNumberSearchStatus()
     {
-        $this->assertFalse($this->adapter->isArticleNumberSearch());
+        $articleNumberSearchStatusEnum = FF::getClassName('Data\ArticleNumberSearchStatus');
+        $this->assertEquals($articleNumberSearchStatusEnum::IsNoArticleNumberSearch(), $this->adapter->getArticleNumberStatus());
     }
 }
