@@ -1,6 +1,9 @@
 FACT-Finder-PHP-Library
 =======================
 
+This is a modified version of the original [FACT-Finder-PHP-Library](https://github.com/FACT-Finder/FACT-Finder-PHP-Library) for the oxid module swFactFinder.
+It includes some modifications to allow its compatibility with OXID.
+
 This is a complete rewrite of and replaces the old
 [FACT Finder PHP Library](https://github.com/FACT-Finder/FACT-Finder-PHP-Framework).
 
