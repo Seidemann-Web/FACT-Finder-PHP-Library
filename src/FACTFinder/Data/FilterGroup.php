@@ -45,7 +45,6 @@ class FilterGroup extends \ArrayIterator
 
     /**
      * @param Filter[] $filters The Filter objects to add to the group.
-     * @param string $refKey
      * @param int $foundRecordsCount Total number of records found for the
      *        search these records are from. This can be greater than
      *        count($records), because $records may just be the records from a
@@ -118,16 +117,6 @@ class FilterGroup extends \ArrayIterator
     {
         $filterStyleEnum = FF::getClassName('Data\FilterStyle');
         return $this->style == $filterStyleEnum::MultiSelect();
-    }
-
-    /**
-     * @deprecated use hasPreviewImages instead
-     * @return bool
-     */
-    public function isColorStyle()
-    {
-        $filterStyleEnum = FF::getClassName('Data\FilterStyle');
-        return $this->style == $filterStyleEnum::Color();
     }
 
     /**
