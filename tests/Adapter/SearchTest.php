@@ -41,7 +41,6 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
 
         $this->assertInstanceOf('FACTFinder\Data\Result', $result);
         $this->assertEquals(66, $result->getFoundRecordsCount());
-        $this->assertEquals('WOwfiHGNS', $result->getRefKey());
         $this->assertEquals(1, count($result));
 
         $record = $result[0];
@@ -60,7 +59,6 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
 
         $this->assertInstanceOf('FACTFinder\Data\Result', $result);
         $this->assertEquals(66, $result->getFoundRecordsCount());
-        $this->assertEquals('WOwfiHGNS', $result->getRefKey());
         $this->assertEquals(1, count($result));
 
         $record = $result[0];
@@ -262,14 +260,6 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
         $this->assertNull($this->adapter->getStackTrace());
     }
 
-    public function testError()
-    {
-        $this->adapter->setQuery('error');
-
-        $this->assertEquals('500', $this->adapter->getError());
-        $this->assertEquals('stacktrace', $this->adapter->getStackTrace());
-    }
-
     public function testGetFollowSearchValue()
     {
         $this->assertEquals(9798, $this->adapter->getFollowSearchValue());
@@ -286,5 +276,24 @@ class SearchTest extends \FACTFinder\Test\BaseTestCase
     {
         $articleNumberSearchStatusEnum = FF::getClassName('Data\ArticleNumberSearchStatus');
         $this->assertEquals($articleNumberSearchStatusEnum::IsNoArticleNumberSearch(), $this->adapter->getArticleNumberStatus());
+    }
+    
+     public function testSingleWordSearchLoading()
+    {
+        $this->adapter->setQuery('helm && fahrrad && bekleidung && schuhe');
+
+        $singleWordSearchItems = $this->adapter->getSingleWordSearch();
+        $this->assertEquals(4, count($singleWordSearchItems));
+        $this->assertInstanceOf("FACTFinder\Data\SingleWordSearchItem", $singleWordSearchItems[0]);
+        $this->assertEquals('helm', $singleWordSearchItems[0]->getLabel());
+        $this->assertEquals('1350', $singleWordSearchItems[0]->getHitCount());
+        $this->assertEquals('/index.php?searchField=%2A&productsPerPage=10&keywords=helm', $singleWordSearchItems[0]->getUrl());
+        $previewRecords = $singleWordSearchItems[0]->getPreviewRecords();
+        $this->assertEquals(2, count($previewRecords));
+        $this->assertInstanceOf("FACTFinder\Data\Record", $previewRecords[0]);
+        $this->assertEquals(19451, $previewRecords[0]->getId());
+        $this->assertEquals(96.97, $previewRecords[0]->getSimilarity());
+        $this->assertEquals(1, $previewRecords[0]->getPosition());
+        $this->assertEquals('1', $previewRecords[0]->getField('__ORIG_POSITION__'));
     }
 }
