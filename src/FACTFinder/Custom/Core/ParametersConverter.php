@@ -39,9 +39,12 @@ class ParametersConverter extends \FACTFinder\Core\ParametersConverter
         
         $oConfig = class_exists('oxRegistry') ? \oxRegistry::getConfig() : \oxConfig::getInstance();
         $aMapping = $oConfig->getConfigParam('aSwFFSortMapping');
-        if (!isset($aMapping[$clientParameters['listorderby']]))
-            return;
-        $clientParameters['sort'.$aMapping[$clientParameters['listorderby']]] = $clientParameters['listorder'];
+        if (isset($aMapping[$clientParameters['listorderby']])) {
+            $paramName = 'sort'.$aMapping[$clientParameters['listorderby']];
+        } elseif($oConfig->getConfigParam('bSwFFUseSortings')) {
+            $paramName = 'sort'.$clientParameters['listorderby'];
+        }
+        $clientParameters[$paramName] = $clientParameters['listorder'];
     }
     
     /**
@@ -91,14 +94,25 @@ class ParametersConverter extends \FACTFinder\Core\ParametersConverter
     protected function reverseSortingMapping($serverParameters)
     {
         $oConfig = class_exists('oxRegistry') ? \oxRegistry::getConfig() : \oxConfig::getInstance();
-        $aMapping = $oConfig->getConfigParam('aSwFFSortMapping');
-        foreach ($aMapping as $oxidValue => $FFParamSuffix) {
-            $FFParamName = 'sort'.$FFParamSuffix;
-            if(!isset($serverParameters[$FFParamName]))
-                continue;
-            $serverParameters['listorder'] = $serverParameters[$FFParamName];
-            $serverParameters['listorderby'] = $oxidValue;
-            unset($serverParameters[$FFParamName]);
+        if ($oConfig->getConfigParam('bSwFFUseSortings')) {
+            foreach ($serverParameters->getArray() as $name => $value) {
+                if (strpos($name, 'sort') !== 0) {
+                    continue;
+                }
+                $serverParameters['listorder'] = $value;
+                $serverParameters['listorderby'] = substr($name, 4);
+                unset($serverParameters[$name]);
+            }
+        } else {
+            $aMapping = $oConfig->getConfigParam('aSwFFSortMapping');
+            foreach ($aMapping as $oxidValue => $FFParamSuffix) {
+                $FFParamName = 'sort' . $FFParamSuffix;
+                if (!isset($serverParameters[$FFParamName]))
+                    continue;
+                $serverParameters['listorder'] = $serverParameters[$FFParamName];
+                $serverParameters['listorderby'] = $oxidValue;
+                unset($serverParameters[$FFParamName]);
+            }
         }
     }
     
