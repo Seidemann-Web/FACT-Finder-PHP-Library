@@ -44,7 +44,9 @@ class ParametersConverter extends \FACTFinder\Core\ParametersConverter
         } elseif($oConfig->getConfigParam('bSwFFUseSortings')) {
             $paramName = 'sort'.$clientParameters['listorderby'];
         }
-        $clientParameters[$paramName] = $clientParameters['listorder'];
+        if(isset($paramName)) {
+            $clientParameters[$paramName] = $clientParameters['listorder'];
+        }
     }
     
     /**
@@ -70,7 +72,7 @@ class ParametersConverter extends \FACTFinder\Core\ParametersConverter
      * 
      * modified to reverse sort and paging mapping
      * 
-     * @param Parameters $clientParameters Parameters obtained from FACT-Finder.
+     * @param Parameters $serverParameters Parameters obtained from FACT-Finder.
      * @return Parameters Parameters ready for use in requests to the client.
      */
     public function convertServerToClientParameters($serverParameters)
@@ -139,7 +141,7 @@ class ParametersConverter extends \FACTFinder\Core\ParametersConverter
      * 
      * Adds keys to an array of parameters according to the given require rules.
      * @param Parameters $parameters Parameters to be modified.
-     * @param string[] $ignoreRules Array of required parameters. The keys are
+     * @param string[] $requireRules Array of required parameters. The keys are
      *        the names of the required parameter, the values are default values
      *        to be used if the parameter is not present.
      */
