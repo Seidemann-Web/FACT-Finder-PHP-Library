@@ -23,10 +23,12 @@ class Tracking extends \FACTFinder\Adapter\Tracking
         $title = '',
         $pageSize = 12,
         $origPageSize = -1,
-        $userid = null
+        $userId = null,
+        $campaign = null,
+        $instoreAds = false
     ) {
-        parent::setupClickTracking($id, $query, $pos, $masterId, $sid, $cookieId, $origPos, $page, $simi, $title, $pageSize, $origPageSize, $userid);
-        $this->_converParameters();
+        parent::setupClickTracking($id, $query, $pos, $masterId, $sid, $cookieId, $origPos, $page, $simi, $title, $pageSize, $origPageSize, $userId, $campaign, $instoreAds);
+        $this->_convertParameters();
     }
 
     /**
@@ -43,10 +45,12 @@ class Tracking extends \FACTFinder\Adapter\Tracking
         $cookieId = null,
         $count = 1,
         $price = null,
-        $userid = null
+        $userId = null,
+        $campaign = null,
+        $instoreAds = false
     ) {
-        parent::setupCartTracking($id, $masterId, $title, $query, $sid, $cookieId, $count, $price, $userid);
-        $this->_converParameters();
+        parent::setupCartTracking($id, $masterId, $title, $query, $sid, $cookieId, $count, $price, $userId, $campaign, $instoreAds);
+        $this->_convertParameters();
     }
 
     /**
@@ -63,10 +67,12 @@ class Tracking extends \FACTFinder\Adapter\Tracking
         $cookieId = null,
         $count = 1,
         $price = null,
-        $userid = null
+        $userId = null,
+        $campaign = null,
+        $instoreAds = false
     ) {
-        parent::setupCheckoutTracking($id, $masterId, $title, $query, $sid, $cookieId, $count, $price, $userid);
-        $this->_converParameters();
+        parent::setupCheckoutTracking($id, $masterId, $title, $query, $sid, $cookieId, $count, $price, $userId, $campaign, $instoreAds);
+        $this->_convertParameters();
     }
 
     /**
@@ -80,10 +86,10 @@ class Tracking extends \FACTFinder\Adapter\Tracking
         $masterId = null,
         $sid = null,
         $cookieId = null,
-        $userid = null
+        $userId = null
     ) {
-        parent::setupRecommendationClickTracking($id, $mainId, $masterId, $sid, $cookieId, $userid);
-        $this->_converParameters();
+        parent::setupRecommendationClickTracking($id, $mainId, $masterId, $sid, $cookieId, $userId);
+        $this->_convertParameters();
     }
 
     /**
@@ -94,13 +100,25 @@ class Tracking extends \FACTFinder\Adapter\Tracking
     public function setupLoginTracking(
         $sid = null,
         $cookieId = null,
-        $userid = null
+        $userId = null
     ) {
-        parent::setupLoginTracking($sid, $cookieId, $userid);
-        $this->_converParameters();
+        parent::setupLoginTracking($sid, $cookieId, $userId);
+        $this->_convertParameters();
     }
-    
+
+    /**
+     * @deprecated Use _convertParameters() instead.
+     */
     protected function _converParameters()
+    {
+        return $this->_convertParameters();
+    }
+
+
+    /**
+     * Convert all set parameters with decodeClientUrlData.
+     */
+    protected function _convertParameters()
     {
         $params = $this->parameters->getArray();
         $this->parameters->clear();
