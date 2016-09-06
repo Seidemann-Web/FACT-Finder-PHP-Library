@@ -3,7 +3,7 @@ namespace FACTFinder\Adapter;
 
 use FACTFinder\Loader as FF;
 
-class Search extends AbstractAdapter
+class Search extends PersonalisedResponse
 {
     
     /**
@@ -42,6 +42,11 @@ class Search extends AbstractAdapter
     private $sorting;
 
     /**
+     * @var FACTFinder\Data\SortingItems
+     */
+    private $sortingItems;
+
+    /**
      * @var FACTFinder\Data\BreadCrumbTrail
      */
     private $breadCrumbTrail;
@@ -50,16 +55,6 @@ class Search extends AbstractAdapter
      * @var FACTFinder\Data\CampaignIterator
      */
     private $campaigns;
-    
-    /**
-     * @var bool
-     */
-    private $recordsUpToDate = false;
-    
-    /**
-     * @var bool
-     */
-    private $idsOnly = false;
 
     public function __construct(
         $loggerClass,
@@ -87,41 +82,16 @@ class Search extends AbstractAdapter
     {
         $this->parameters['query'] = $query;
     }
-    
-    /**
-     * Set Value for parameter sid
-     * @param string $sSid session id
-     */
-    public function setSid($sSid)
-    {
-        $this->parameters['sid'] = $sSid;
-    }
-    
-    /**
-     * Set this to true to only retrieve the IDs of products instead
-     * of full Record objects.
-     * 
-     * @param $idsOnly bool
-     */
-    public function setIDsOnly($idsOnly)
-    {
-        if($this->idsOnly && !$idsOnly)
-            $this->recordsUpToDate = false;
-
-        $this->idsOnly = $idsOnly;
-        $parameters = $this->request->getParameters();
-        $parameters['idsOnly'] = $idsOnly ? 'true' : 'false';
-    }
 
     /**
      * @return \FACTFinder\Data\Result
      */
     public function getResult()
     {
-        if (is_null($this->result) || !$this->recordsUpToDate) {
+        if (is_null($this->result) || !$this->upToDate) {
             $this->request->resetLoaded();
             $this->result = $this->createResult();
-            $this->recordsUpToDate = true;
+            $this->upToDate = true;
         }
 
         return $this->result;
@@ -663,6 +633,70 @@ class Search extends AbstractAdapter
 
             return FF::getInstance(
                 'Data\Sorting',
+                $sortOptions
+            );
+        }
+        return null;
+    }
+
+    /**
+     * @return \FACTFinder\Data\SortingItems
+     */
+    public function getSortingItems()
+    {
+        if (is_null($this->sortingItems))
+            $this->sortingItems = $this->createSortingItems();
+
+        return $this->sortingItems;
+    }
+
+    /**
+     * @return \FACTFinder\Data\SortingItems
+     */
+    private function createSortingItems()
+    {
+        $sortOptions = array();
+
+        $jsonData = $this->getResponseContent();
+
+        if ($this->isValidResponse($jsonData))
+        {
+            $sortingData = $jsonData['searchResult']['sortsList'];
+            if (!empty($sortingData))
+            {
+                $orderEnum = FF::getClassName('Data\SortingDirection');
+                foreach ($sortingData as $optionData)
+                {
+                    $optionLink = $this->convertServerQueryToClientUrl(
+                        $optionData['searchParams']
+                    );
+                    if (isset($optionData['order']))
+                    {
+                        switch ($optionData['order'])
+                        {
+                            case 'asc':
+                                $order = $orderEnum::Ascending();
+                                break;
+                            case 'desc':
+                            default:
+                                $order = $orderEnum::Descending();
+                                break;
+                        }
+                    }
+
+                    $sortOptions[] = FF::getInstance(
+                        'Data\SortingItem',
+                        $optionData['name'],
+                        $order,
+                        $optionData['description'],
+                        $optionLink,
+                        $optionData['selected']
+                    );
+                }
+            }
+
+            return FF::getInstance(
+                'Data\SortingItems',
                 $sortOptions
             );
         }
